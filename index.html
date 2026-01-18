@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Tap to Earn BNB</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #F0B90B, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        /* Balance Card */
+        .balance-card {
+            background: rgba(240, 185, 11, 0.1);
+            border: 2px solid #F0B90B;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        
+        .balance-amount {
+            font-size: 48px;
+            font-weight: bold;
+            color: #F0B90B;
+            margin: 10px 0;
+        }
+        
+        .balance-usd {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+        
+        /* Tap Button */
+        .tap-container {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .tap-button {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            background: radial-gradient(circle, #F0B90B 0%, #D4A017 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0f172a;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s;
+            box-shadow: 0 10px 30px rgba(240, 185, 11, 0.3);
+            border: 5px solid #FFD700;
+        }
+        
+        .tap-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(240, 185, 11, 0.2);
+        }
+        
+        .tap-stats {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .tap-count {
+            font-size: 18px;
+            color: #F0B90B;
+            font-weight: bold;
+        }
+        
+        /* Tasks */
+        .section-title {
+            font-size: 20px;
+            margin: 30px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .task-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .task-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .task-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .task-reward {
+            color: #F0B90B;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .task-status {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        /* Withdraw Section */
+        .withdraw-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .withdraw-form {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .withdraw-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, #F0B90B, #D4A017);
+            color: #0f172a;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .withdraw-button:hover {
+            opacity: 0.9;
+        }
+        
+        .withdraw-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #F0B90B;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10B981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        /* Price Info */
+        .price-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .price-update {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🚀</div>
+            <div class="title">TAP TO EARN BNB</div>
+            <div class="subtitle">Nhấn để kiếm BNB mỗi ngày</div>
+        </div>
+        
+        <!-- Balance -->
+        <div class="balance-card">
+            <div class="balance-label">SỐ DƯ BNB CỦA BẠN</div>
+            <div class="balance-amount" id="bnbBalance">0.00000000</div>
+            <div class="balance-usd" id="usdBalance">≈ 0.00 USD</div>
+            <div class="tap-stats">
+                <div>Hôm nay: <span id="todayTaps">0</span>/1000 taps</div>
+                <div class="tap-count">Mỗi tap: 0.00000012 BNB</div>
+            </div>
+        </div>
+        
+        <!-- Tap Button -->
+        <div class="tap-container">
+            <div class="tap-button" id="tapButton" onclick="tap()">
+                <div style="text-align: center;">
+                    <div style="font-size: 32px;">👆</div>
+                    <div>TAP HERE</div>
+                    <div style="font-size: 14px; margin-top: 5px;">+0.00000012 BNB</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalTaps">0</div>
+                <div class="stat-label">Tổng Tap</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="todayEarned">0.00</div>
+                <div class="stat-label">BNB Hôm nay</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="tasksCompleted">0</div>
+                <div class="stat-label">Nhiệm vụ</div>
+            </div>
+        </div>
+        
+        <!-- Price Info -->
+        <div class="price-info">
+            <div>💎 1 BNB = <span id="bnbPrice">948</span> USDT</div>
+            <div class="price-update">Cập nhật: <span id="priceTime">20 phút trước</span></div>
+        </div>
+        
+        <!-- Tasks Section -->
+        <h3 class="section-title">📋 NHIỆM VỤ KIẾM THÊM</h3>
+        <div class="tasks-grid">
+            <!-- Task 1: Xem quảng cáo -->
+            <div class="task-card" onclick="startTask('ad')" id="adTask">
+                <div class="task-icon">📺</div>
+                <div class="task-title">Xem Quảng Cáo</div>
+                <div class="task-reward">+500 tap/30 phút</div>
+                <div class="task-status" id="adStatus">Còn <span id="adCount">10</span> lượt</div>
+            </div>
+            
+            <!-- Task 2: Nhấn Link 1 -->
+            <div class="task-card" onclick="startTask('link1')" id="link1Task">
+                <div class="task-icon">🔗</div>
+                <div class="task-title">Nhấn Link VNDShare</div>
+                <div class="task-reward">+1000 tap</div>
+                <div class="task-status" id="link1Status">Hôm nay chưa làm</div>
+            </div>
+            
+            <!-- Task 3: Nhấn Link 2 -->
+            <div class="task-card" onclick="startTask('link2')" id="link2Task">
+                <div class="task-icon">🔗</div>
+                <div class="task-title">Nhấn Link VNShare</div>
+                <div class="task-reward">+1000 tap</div>
+                <div class="task-status" id="link2Status">Hôm nay chưa làm</div>
+            </div>
+            
+            <!-- Task 4: Tham gia nhóm -->
+            <div class="task-card" onclick="startTask('joinGroup')" id="groupTask">
+                <div class="task-icon">👥</div>
+                <div class="task-title">Tham gia nhóm</div>
+                <div class="task-reward">+10,000 tap</div>
+                <div class="task-status" id="groupStatus">Chưa tham gia</div>
+            </div>
+            
+            <!-- Task 5: Youtube Code -->
+            <div class="task-card" onclick="startTask('youtube')" id="youtubeTask">
+                <div class="task-icon">🎬</div>
+                <div class="task-title">Nhập code Youtube</div>
+                <div class="task-reward">+100,000 tap</div>
+                <div class="task-status" id="youtubeStatus">Chưa làm</div>
+            </div>
+            
+            <!-- Task 6: Vượt link -->
+            <div class="task-card" onclick="startTask('linkVerify')" id="verifyTask">
+                <div class="task-icon">✅</div>
+                <div class="task-title">Vượt link xác minh</div>
+                <div class="task-reward">+10,000,000 tap</div>
+                <div class="task-status" id="verifyStatus">Chưa làm</div>
+            </div>
+        </div>
+        
+        <!-- Withdraw Section -->
+        <div class="withdraw-section">
+            <h3 class="section-title">🚀 RÚT BNB VỀ VÍ</h3>
+            <div class="price-info" style="background: rgba(240, 185, 11, 0.1);">
+                <div>💰 Tối thiểu rút: <strong>0.0008 BNB</strong></div>
+                <div>⏳ Xử lý: 5-30 phút</div>
+            </div>
+            
+            <button class="withdraw-button" onclick="showWithdrawForm()" id="withdrawBtn">
+                RÚT BNB VỀ VÍ
+            </button>
+            
+            <div class="withdraw-form" id="withdrawForm">
+                <div class="form-group">
+                    <label>Địa chỉ ví BNB (BEP20):</label>
+                    <input type="text" id="walletAddress" placeholder="0x..." maxlength="42">
+                </div>
+                
+                <div class="form-group">
+                    <label>Số lượng BNB muốn rút:</label>
+                    <input type="number" id="withdrawAmount" placeholder="0.0008" step="0.000001" min="0.0008">
+                    <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">
+                        Số dư khả dụng: <span id="availableBalance">0.00000000</span> BNB
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Bạn sẽ nhận được:</label>
+                    <div style="text-align: center; font-size: 20px; font-weight: bold; color: #F0B90B; padding: 10px; background: rgba(240, 185, 11, 0.1); border-radius: 8px;">
+                        <span id="receiveAmount">0.0000</span> BNB
+                    </div>
+                    <div style="text-align: center; font-size: 14px; opacity: 0.7; margin-top: 5px;">
+                        ≈ <span id="receiveUSD">0.00</span> USD
+                    </div>
+                </div>
+                
+                <button class="withdraw-button" onclick="processWithdrawal()">
+                    XÁC NHẬN RÚT
+                </button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; margin: 30px 0; font-size: 12px; opacity: 0.5;">
+            © 2024 Tap to Earn BNB | Tỷ giá cập nhật 20 phút/lần
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+    
+    <script>
+        // ========== KHỞI TẠO ==========
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Mở full màn hình
+        
+        // Lấy thông tin user
+        const user = tg.initDataUnsafe?.user;
+        const userId = user?.id || Date.now();
+        
+        // Dữ liệu user (trong thực tế lưu database)
+        let userData = {
+            balance: 0.00000123,
+            totalTaps: 0,
+            todayTaps: 0,
+            todayEarned: 0,
+            tasks: {
+                ad: { count: 10, lastTime: null },
+                link1: { completed: false, date: null },
+                link2: { completed: false, date: null },
+                joinGroup: false,
+                youtube: false,
+                linkVerify: false
+            },
+            withdrawalHistory: []
+        };
+        
+        // Tỷ giá
+        const BNB_PRICE = 948; // 1 BNB = 948 USDT
+        const TAP_REWARD = 0.00000012; // Mỗi tap
+        
+        // ========== HÀM HIỂN THỊ ==========
+        function updateDisplay() {
+            // Cập nhật số dư
+            document.getElementById('bnbBalance').textContent = userData.balance.toFixed(8);
+            document.getElementById('usdBalance').textContent = `≈ ${(userData.balance * BNB_PRICE).toFixed(2)} USD`;
+            
+            // Cập nhật tap
+            document.getElementById('todayTaps').textContent = userData.todayTaps;
+            document.getElementById('totalTaps').textContent = userData.totalTaps;
+            document.getElementById('todayEarned').textContent = userData.todayEarned.toFixed(8);
+            
+            // Cập nhật nhiệm vụ đã hoàn thành
+            const completedTasks = Object.values(userData.tasks).filter(task => 
+                typeof task === 'object' ? task.completed || task.count === 0 : task
+            ).length;
+            document.getElementById('tasksCompleted').textContent = completedTasks;
+            
+            // Cập nhật giá
+            document.getElementById('bnbPrice').textContent = BNB_PRICE;
+            document.getElementById('availableBalance').textContent = userData.balance.toFixed(8);
+            
+            // Cập nhật trạng thái nhiệm vụ
+            updateTaskStatus();
+            
+            // Kiểm tra đủ điều kiện rút
+            const withdrawBtn = document.getElementById('withdrawBtn');
+            if (userData.balance >= 0.0008) {
+                withdrawBtn.disabled = false;
+                withdrawBtn.innerHTML = `RÚT ${userData.balance.toFixed(8)} BNB`;
+            } else {
+                withdrawBtn.disabled = true;
+                withdrawBtn.innerHTML = `CẦN THÊM ${(0.0008 - userData.balance).toFixed(8)} BNB`;
+            }
+        }
+        
+        // ========== TAP FUNCTION ==========
+        function tap() {
+            // Kiểm tra giới hạn 1000 tap/ngày
+            if (userData.todayTaps >= 1000) {
+                showNotification('⚠️ Đã đạt 1000 tap hôm nay! Làm nhiệm vụ để có thêm tap.');
+                return;
+            }
+            
+            // Hiệu ứng tap
+            const tapBtn = document.getElementById('tapButton');
+            tapBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                tapBtn.style.transform = 'scale(1)';
+            }, 100);
+            
+            // Thêm BNB
+            userData.balance += TAP_REWARD;
+            userData.todayEarned += TAP_REWARD;
+            userData.todayTaps++;
+            userData.totalTaps++;
+            
+            // Hiển thị thông báo
+            showNotification(`+${TAP_REWARD.toFixed(8)} BNB! Tap: ${userData.todayTaps}/1000`);
+            
+            // Cập nhật hiển thị
+            updateDisplay();
+            
+            // Lưu dữ liệu (trong thực tế gửi về server)
+            saveUserData();
+        }
+        
+        // ========== TASK FUNCTIONS ==========
+        function startTask(taskType) {
+            switch(taskType) {
+                case 'ad':
+                    // Xem quảng cáo - 10 lần/ngày, mỗi lần +500 tap
+                    if (userData.tasks.ad.count > 0) {
+                        // Mở quảng cáo
+                        showNotification('📺 Đang mở quảng cáo...');
+                        
+                        // Giả lập xem quảng cáo 30 giây
+                        setTimeout(() => {
+                            userData.tasks.ad.count--;
+                            userData.todayTaps += 500;
+                            userData.balance += (500 * TAP_REWARD);
+                            userData.todayEarned += (500 * TAP_REWARD);
+                            
+                            showNotification('✅ Xem quảng cáo thành công! +500 tap');
+                            updateDisplay();
+                            saveUserData();
+                        }, 1000);
+                    } else {
+                        showNotification('⚠️ Đã hết lượt xem quảng cáo hôm nay!');
+                    }
+                    break;
+                    
+                case 'link1':
+                    // Link VNDShare - 1 lần/ngày, +1000 tap
+                    if (!userData.tasks.link1.completed) {
+                        // Mở link
+                        window.open('https://vndshare.net/g3143511093', '_blank');
+                        
+                        userData.tasks.link1.completed = true;
+                        userData.todayTaps += 1000;
+                        userData.balance += (1000 * TAP_REWARD);
+                        userData.todayEarned += (1000 * TAP_REWARD);
+                        
+                        
